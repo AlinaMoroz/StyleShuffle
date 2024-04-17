@@ -85,6 +85,7 @@ flutter:
     - assets/labels.txt
     - assets/images/first1.png
     - assets/images/first2.jpg
+    - assets/images/dress.png
     - assets/images/base.png
     - assets/images/base.jpg
     - assets/model_unquant2.tflite

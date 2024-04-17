@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
+import 'mainButton/CustomBottomNavigationBar.dart';
 import 'modal/DBcloth.dart';
 import 'modal/user.dart';
 
@@ -100,13 +101,8 @@ class _CollectionAll extends State<CollectionAll> {
 
 
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Color(0xff0c1241).withOpacity(0.1),
-          elevation: 1.0,
-          type: BottomNavigationBarType.fixed,
-          currentIndex: 3,
-          selectedItemColor: Colors.blue,
-          unselectedItemColor: Colors.black,
+        bottomNavigationBar: CustomBottomNavigationBar(
+          currentIndex: 3, // Укажите активный элемент здесь
           onTap: (index) {
             setState(() {
               switch (index) {
@@ -123,38 +119,8 @@ class _CollectionAll extends State<CollectionAll> {
                   Navigator.pushNamed(context, '/7');
                   break;
               }
-            });
-          },
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.ac_unit,
-                color: Color(0xFF33737D),
-              ),
-              label: 'Погода',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.add_a_photo,
-                color: Color(0xFF33737D),
-              ),
-              label: 'Добавить',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.add_outlined,
-                color: Color(0xFF33737D),
-              ),
-              label: 'Создать образ',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.accessibility,
-                color: Color(0xFF33737D),
-              ),
-              label: 'Образы',
-            ),
-          ],
+            });},
+
         ),
       ),
     );

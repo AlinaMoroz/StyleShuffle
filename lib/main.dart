@@ -7,14 +7,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:shuffle1/List_of_the_clothes.dart';
-import 'package:shuffle1/registration.dart';
+import 'package:shuffle1/TakePhotoPage.dart';
+import 'package:shuffle1/RegistrationPage.dart';
 
-import 'First.dart';
-import 'Weather.dart';
-import 'collection_cloth.dart';
+import 'ShopAllPage.dart';
+import 'SingInPage.dart';
+import 'WeatherPage.dart';
+import 'CollectionSetPage.dart';
 import 'create_photo.dart';
-import 'create_style.dart';
+import 'CreateSetPage.dart';
 import 'modal/auth_service.dart';
 import 'modal/user.dart';
 
@@ -40,7 +41,8 @@ class Main extends StatelessWidget {
       initialData: User_(),
       child: Consumer<User_>(
         builder: (context, user, _) {
-          final initialRoute = user != null ? '/2' : '/1';
+          // final initialRoute = user != null ? '/2' : '/1';
+          // final initialRoute = '/2';
           return MaterialApp(
             theme: ThemeData(
               primaryColor: Colors.deepOrange,
@@ -53,9 +55,10 @@ class Main extends StatelessWidget {
               '/5': (context) => create_style(),
               '/6': (context) => To_start_class_down(),
               '/7': (context) => CollectionAll(),
+              '/8': (context) => ShopAllPage(),
             },
             //initialRoute: initialRoute,
-            initialRoute: '/2',
+            initialRoute: '/4',
           );
         },
       ),

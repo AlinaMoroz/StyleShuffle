@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:shuffle1/Load_m.dart';
+import 'package:shuffle1/LoadModel.dart';
 import 'package:shuffle1/modal/DBcloth.dart';
 import 'package:tflite/tflite.dart';
 import 'package:tflite/tflite.dart';
@@ -14,6 +14,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'additionalP/api_client.dart';
 import 'package:tflite/tflite.dart';
 
+import 'mainButton/CustomBottomNavigationBar.dart';
 import 'modal/user.dart';
 
 
@@ -535,14 +536,8 @@ class List_of_the_clothes extends State<To_start_class_down> {
             ],
           ),
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Color(0xff0c1241).withOpacity(0.1),
-          elevation: 1.0,
-          type: BottomNavigationBarType.fixed,
-          // добавленное свойство
-          currentIndex: 1,
-          selectedItemColor: Colors.blue,
-          unselectedItemColor: Colors.black,
+        bottomNavigationBar: CustomBottomNavigationBar(
+          currentIndex: 1, // Укажите активный элемент здесь
           onTap: (index) {
             setState(() {
               switch (index) {
@@ -556,44 +551,13 @@ class List_of_the_clothes extends State<To_start_class_down> {
                   Navigator.pushNamed(context, '/5');
                   break;
                 case 3:
-                  Navigator.pushNamed(context, '/7');
+                  Navigator.pushNamed(context, '/8');//7
                   break;
               }
-            });
-          },
+            });},
 
-
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.ac_unit,
-                color: Color(0xFF33737D),
-              ),
-              label: 'Погода',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.add_a_photo,
-                color: Color(0xFF33737D),
-              ),
-              label: 'Добавить',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.add_outlined,
-                color: Color(0xFF33737D),
-              ),
-              label: 'Создать образ',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.accessibility,
-                color: Color(0xFF33737D),
-              ),
-              label: 'Образы',
-            ),
-          ],
         ),
+
       ),
     );
   }

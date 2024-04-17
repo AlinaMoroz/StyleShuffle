@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shuffle1/additionalP/api_client.dart';
 
+import 'mainButton/CustomBottomNavigationBar.dart';
 import 'modal/weather_model.dart';
 
 
@@ -222,14 +223,8 @@ class _WeatherState extends State<WeatherAll> {
             ],
           ),
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Color(0xff0c1241).withOpacity(0.1),
-          elevation: 1.0,
-          type: BottomNavigationBarType.fixed,
-          // добавленное свойство
-          currentIndex: 0,
-          selectedItemColor: Colors.blue,
-          unselectedItemColor: Colors.black,
+        bottomNavigationBar: CustomBottomNavigationBar(
+          currentIndex: 0, // Укажите активный элемент здесь
           onTap: (index) {
             setState(() {
               switch (index) {
@@ -245,41 +240,68 @@ class _WeatherState extends State<WeatherAll> {
                 case 3:
                   Navigator.pushNamed(context, '/7');
                   break;
-              }
-            });
-          },
+                }
+              });},
 
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.ac_unit,
-                color: Color(0xFF33737D),
-              ),
-              label: 'Погода',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.add_a_photo,
-                color: Color(0xFF33737D),
-              ),
-              label: 'Добавить',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.add_outlined,
-                color: Color(0xFF33737D),
-              ),
-              label: 'Создать образ',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.accessibility,
-                color: Color(0xFF33737D),
-              ),
-              label: 'Образы',
-            ),
-          ],
         ),
+        // BottomNavigationBar(
+        //   backgroundColor: Color(0xff0c1241).withOpacity(0.1),
+        //   elevation: 1.0,
+        //   type: BottomNavigationBarType.fixed,
+        //   // добавленное свойство
+        //   currentIndex: 0,
+        //   selectedItemColor: Colors.blue,
+        //   unselectedItemColor: Colors.black,
+        //   onTap: (index) {
+        //     setState(() {
+        //       switch (index) {
+        //         case 0:
+        //           Navigator.pushNamed(context, '/4');
+        //           break;
+        //         case 1:
+        //           Navigator.pushNamed(context, '/2');
+        //           break;
+        //         case 2:
+        //           Navigator.pushNamed(context, '/5');
+        //           break;
+        //         case 3:
+        //           Navigator.pushNamed(context, '/7');
+        //           break;
+        //       }
+        //     });
+        //   },
+        //
+        //   items: const <BottomNavigationBarItem>[
+        //     BottomNavigationBarItem(
+        //       icon: Icon(
+        //         Icons.ac_unit,
+        //         color: Color(0xFF33737D),
+        //       ),
+        //       label: 'Погода',
+        //     ),
+        //     BottomNavigationBarItem(
+        //       icon: Icon(
+        //         Icons.add_a_photo,
+        //         color: Color(0xFF33737D),
+        //       ),
+        //       label: 'Добавить',
+        //     ),
+        //     BottomNavigationBarItem(
+        //       icon: Icon(
+        //         Icons.add_outlined,
+        //         color: Color(0xFF33737D),
+        //       ),
+        //       label: 'Создать образ',
+        //     ),
+        //     BottomNavigationBarItem(
+        //       icon: Icon(
+        //         Icons.accessibility,
+        //         color: Color(0xFF33737D),
+        //       ),
+        //       label: 'Образы',
+        //     ),
+        //   ],
+        // ),
       ),
     );
   }
