@@ -1,4 +1,4 @@
-CREATE TABLE news_lines
+CREATE TABLE IF NOT EXISTS news_lines
 (
     id        BIGSERIAL PRIMARY KEY,
     post_date TIMESTAMP,
@@ -6,25 +6,30 @@ CREATE TABLE news_lines
     dislike_count   int
 );
 
-CREATE TABLE sets
-(
-    id           BIGSERIAL PRIMARY KEY,
-    description  VARCHAR(255),
-    news_line_id BIGINT REFERENCES news_lines (id),
-    name         VARCHAR(128)
-);
-
-CREATE TABLE users
+CREATE TABLE IF NOT EXISTS users
 (
     id       BIGSERIAL PRIMARY KEY,
     name     VARCHAR(128),
     email    VARCHAR(255) UNIQUE,
     password VARCHAR(255),
     avatar   VARCHAR(255),
-    size     VARCHAR(16)
+    size     VARCHAR(16),
+    surname VARCHAR(128),
+    username VARCHAR(128)
 );
 
-CREATE TABLE comments
+CREATE TABLE IF NOT EXISTS looks
+(
+    id           BIGSERIAL PRIMARY KEY,
+    description  VARCHAR(255),
+    news_line_id BIGINT REFERENCES news_lines (id),
+    name         VARCHAR(128),
+    user_id BIGINT REFERENCES users(id)
+);
+
+
+
+CREATE TABLE IF NOT EXISTS comments
 (
     id           BIGSERIAL PRIMARY KEY,
     user_id      BIGINT REFERENCES users(id),
@@ -33,30 +38,22 @@ CREATE TABLE comments
     news_line_id BIGINT REFERENCES news_lines(id)
 );
 
-CREATE TABLE clothes
+CREATE TABLE IF NOT EXISTS clothes
 (
     id         BIGSERIAL PRIMARY KEY,
-    user_id   BIGINT REFERENCES users(id) ,
+    user_id    BIGINT REFERENCES users(id) ,
     link_photo varchar(255),
     season     varchar(32),
-    type       varchar(64)
+    type       varchar(64),
+    brand      varchar(128),
+    color      varchar(64)
 );
 
-CREATE TABLE sets_clothes
+CREATE TABLE IF NOT EXISTS looks_clothes
 (
     id       BIGSERIAL PRIMARY KEY ,
-    set_id   BIGINT REFERENCES sets(id),
+    look_id   BIGINT REFERENCES looks(id),
     cloth_id BIGINT REFERENCES clothes(id)
 );
-
-drop table sets_clothes;
-drop table clothes;
-drop table comments;
-drop table users;
-drop table sets;
-drop table news_lines;
-
-ALTER TABLE sets
-    ADD column user_id BIGINT REFERENCES users(id)
 
 

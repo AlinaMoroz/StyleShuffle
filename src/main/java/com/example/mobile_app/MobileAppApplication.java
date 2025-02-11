@@ -12,8 +12,6 @@ public class MobileAppApplication {
 
         SpringApplication.run(MobileAppApplication.class, args);
 
-
-
     }
 
 }
