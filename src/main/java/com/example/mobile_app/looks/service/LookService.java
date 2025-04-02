@@ -1,5 +1,6 @@
 package com.example.mobile_app.looks.service;
 
+import com.example.mobile_app.clothes.model.Cloth;
 import com.example.mobile_app.clothes.repository.ClothRepository;
 import com.example.mobile_app.looks.LookRepository;
 import com.example.mobile_app.looks.dto.LookCreateDto;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -68,7 +71,13 @@ public class SetService {
     @Transactional
     public LookReadDto create(LookCreateDto lookCreateDto) {
         return Optional.ofNullable(lookCreateDto)
-                .map(lookMapper::toLook)
+                .map(dto ->{
+                    var clothSet = dto.getClothIds().stream()
+                            .map(clothId -> clothRepository.findById(clothId)
+                                    .orElseThrow(() -> new IllegalArgumentException("Cloth not found with id: " + clothId)))
+                            .collect(Collectors.toSet());
+                    return lookMapper.toLook(dto, clothSet);
+                })
                 .map(lookRepository::save)
                 .map(lookMapper::toLookReadDto)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid set data"));

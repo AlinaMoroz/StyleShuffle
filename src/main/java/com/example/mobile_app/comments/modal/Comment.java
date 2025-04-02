@@ -23,7 +23,6 @@ public class Comment implements BaseEntity<Long> {
     @ToString.Exclude
     private User user;
 
-
     private String text;
 
     @Column(name = "date_post")

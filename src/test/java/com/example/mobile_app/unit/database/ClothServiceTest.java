@@ -1,4 +1,4 @@
-package com.example.mobile_app.unit.database.cloth;
+package com.example.mobile_app.unit.database;
 
 import com.example.mobile_app.clothes.service.ClothService;
 import com.example.mobile_app.clothes.Season;
@@ -20,8 +20,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,7 +40,7 @@ public class ClothServiceTest {
     private ClothService clothService;
 
     private final Long ClothId = 1L;
-    private final Long SetId = 1L;
+    private final Long lookId = 1L;
     private final Long UserId = 1L;
     private final String LinkPhoto = "https://www.example.com/photo.jpg";
     Cloth cloth;
@@ -116,35 +116,35 @@ public class ClothServiceTest {
     }
 
     @Nested
-    @Tag("findBySetId")
+    @Tag("findByLookId")
     class FindAllClothByLookIdTest {
         @Test
         void clothesFound() {
-            when(lookClothRepository.findAllClothByLookId(SetId)).thenReturn(List.of(cloth));
+            when(lookClothRepository.findAllClothByLookId(lookId)).thenReturn(Set.of(cloth));
             when(clothMapper.toClothReadDto(cloth)).thenReturn(clothReadDto);
-            var result = clothService.findAllClothBySetId(SetId);
+            var result = clothService.findAllClothByLookId(lookId);
 
             assertEquals(1, result.size());
             assertEquals(clothReadDto, result.get(0));
-            verify(lookClothRepository, times(1)).findAllClothByLookId(SetId);
+            verify(lookClothRepository, times(1)).findAllClothByLookId(lookId);
             verify(clothMapper, times(1)).toClothReadDto(cloth);
         }
 
         @Test
         void clothesNotFound() {
-            when(lookClothRepository.findAllClothByLookId(SetId)).thenReturn(List.of());
-            var result = clothService.findAllClothBySetId(SetId);
+            when(lookClothRepository.findAllClothByLookId(lookId)).thenReturn(Set.of());
+            var result = clothService.findAllClothByLookId(lookId);
 
             assertEquals(0, result.size());
-            verify(lookClothRepository, times(1)).findAllClothByLookId(SetId);
+            verify(lookClothRepository, times(1)).findAllClothByLookId(lookId);
             verify(clothMapper, times(0)).toClothReadDto(cloth);
         }
 
         @Test
         void nullSetId() {
-            when(lookClothRepository.findAllClothByLookId(null)).thenReturn(List.of());
+            when(lookClothRepository.findAllClothByLookId(null)).thenReturn(Set.of());
 
-            var result = clothService.findAllClothBySetId(null);
+            var result = clothService.findAllClothByLookId(null);
 
             assertTrue(result.isEmpty());
             assertEquals(0, result.size());
@@ -188,6 +188,39 @@ public class ClothServiceTest {
 
 //
 //    }
+
+
+    @Nested
+    @Tag("findAllByUserIdAndType")
+    class FindAllByUserIdAndTypeTest {
+        @Test
+        void clothesFound() {
+        }
+        @Test
+        void clothesNotFound() {
+        }
+        @Test
+        void nullUserId() {
+        }
+        @Test
+        void nullType() {
+
+        }
+    }
+
+    @Nested
+    @Tag("deleteById")
+    class DeleteByIdTest {
+        @Test
+        void clothDeleted() {
+        }
+        @Test
+        void clothNotFound() {
+        }
+        @Test
+        void nullId() {
+        }
+    }
 
 
 }

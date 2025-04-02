@@ -44,6 +44,7 @@ public class Cloth  implements BaseEntity<Long> {
     @Builder.Default
     @OneToMany(mappedBy = "cloth")
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<LookCloth> lookClothes = new ArrayList<>();
 
 
