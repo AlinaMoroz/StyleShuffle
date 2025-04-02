@@ -30,6 +30,4 @@ public abstract class CommentMapper {
     @Mapping(target = "newsLine", ignore = true)
     @Mapping(target = "datePost", ignore = true)
     public abstract void updateComment(CommentUpdateDto commentDto, @MappingTarget Comment comment);
-
-
 }

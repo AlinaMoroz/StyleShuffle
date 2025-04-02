@@ -1,5 +1,7 @@
 package com.example.mobile_app.newslines.service;
 
+import com.example.mobile_app.exception.EntityCreationException;
+import com.example.mobile_app.exception.EntityNotFoundException;
 import com.example.mobile_app.newslines.NewsLineRepository;
 import com.example.mobile_app.newslines.dto.NewsLineCreateDto;
 import com.example.mobile_app.newslines.dto.NewsLineReadDto;
@@ -20,64 +22,90 @@ import java.util.Optional;
 public class NewsLineService {
 
     private final NewsLineRepository newsLineRepository;
-    private NewsLineMapper newsLineMapper;
-
-    // TODO: 06.02.2025 addComment and getCommentsByNewsLineId methods
+    private final NewsLineMapper newsLineMapper;
 
     public Optional<NewsLineReadDto> findById(Long id) {
-        return newsLineRepository.findById(id)
+        Optional<NewsLineReadDto> result = newsLineRepository.findById(id)
                 .map(newsLineMapper::toNewsLineReadDto);
-
-
+        if (result.isPresent()) {
+            log.info("NewsLine with ID {} found", id);
+        } else {
+            log.warn("NewsLine with ID {} not found", id);
+        }
+        return result;
     }
 
     @Transactional
     public NewsLineReadDto create(NewsLineCreateDto newsLineCreateDto) {
         return Optional.of(newsLineCreateDto)
                 .map(newsLineMapper::toNewsLine)
-                .map(newsLineRepository::save)
-                .map(newsLineMapper::toNewsLineReadDto)
-                .orElseThrow(() -> new IllegalArgumentException("NewsLineCreateDto cannot be null"));
-
+                .map(entity -> {
+                    NewsLineReadDto dto = newsLineMapper.toNewsLineReadDto(newsLineRepository.save(entity));
+                    log.info("NewsLine created successfully with ID: {}", dto.id());
+                    return dto;
+                })
+                .orElseThrow(() -> {
+                    log.error("Creation failed: NewsLineCreateDto cannot be null");
+                    return new EntityCreationException("NewsLineCreateDto cannot be null");
+                });
     }
 
+    @Transactional
     public NewsLineReadDto addLike(Long id) {
         return newsLineRepository.findById(id)
                 .map(newsLine -> {
                      newsLine.setLikeCount(newsLine.getLikeCount() + 1);
+                    log.info("Like added to NewsLine with ID: {}. New like count: {}", id, newsLine.getLikeCount());
                      return newsLineRepository.save(newsLine);
                 })
                 .map(newsLineMapper::toNewsLineReadDto)
-                .orElseThrow(() -> new IllegalArgumentException("NewsLine with id " + id + " not found"));
+                .orElseThrow(() -> {
+                    log.error("NewsLine with ID {} not found when adding like", id);
+                    return new EntityNotFoundException("NewsLine with id " + id + " not found");
+                });
     }
 
+    @Transactional
     public NewsLineReadDto addDislike(Long id) {
         return newsLineRepository.findById(id)
                 .map(newsLine -> {
                      newsLine.setDislikeCount(newsLine.getDislikeCount() + 1);
+                     log.info("Dislike added to NewsLine with ID: {}. New dislike count: {}", id, newsLine.getDislikeCount());
                      return newsLineRepository.save(newsLine);
                 })
                 .map(newsLineMapper::toNewsLineReadDto)
-                .orElseThrow(() -> new IllegalArgumentException("NewsLine with id " + id + " not found"));
+                .orElseThrow(() -> {
+                    log.error("NewsLine with ID {} not found when adding dislike", id);
+                    return new EntityNotFoundException("NewsLine with id " + id + " not found");
+                });
     }
 
+    @Transactional
     public boolean deleteById(Long id) {
         return newsLineRepository.findById(id)
                 .map(newsLine -> {
                      newsLineRepository.delete(newsLine);
+                    log.info("NewsLine with ID {} deleted successfully", id);
                      return true;
                  })
-                .orElse(false);
+                .orElseGet(() -> {
+                    log.warn("NewsLine with ID {} not found for deletion", id);
+                    return false;
+                });
     }
 
     public Page<NewsLineReadDto> findAllByOrderByLikeCountDesc(Pageable pageable) {
-        return newsLineRepository.findAllByOrderByLikeCountDesc(pageable)
+        Page<NewsLineReadDto> result = newsLineRepository.findAllByOrderByLikeCountDesc(pageable)
                 .map(newsLineMapper::toNewsLineReadDto);
+        log.info("Fetched {} NewsLines by like count descending", result.getTotalElements());
+        return result;
     }
 
     public Page<NewsLineReadDto> findAllByOrderByPostDateDesc(Pageable pageable) {
-        return newsLineRepository.findAllByOrderByPostDateDesc(pageable)
+        Page<NewsLineReadDto> result = newsLineRepository.findAllByOrderByPostDateDesc(pageable)
                 .map(newsLineMapper::toNewsLineReadDto);
+        log.info("Fetched {} NewsLines by post date descending", result.getTotalElements());
+        return result;
     }
 }
 

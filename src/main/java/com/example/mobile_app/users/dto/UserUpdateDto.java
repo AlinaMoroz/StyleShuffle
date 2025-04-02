@@ -9,12 +9,10 @@ import lombok.Value;
 @Schema(description = "Request to update user data")
 public class UserUpdateDto {
 
-
     @Schema(description = "User name")
     @Size(min = 2, max = 128, message = "Value must be between 2 and 128 characters ")
     @NotBlank(message = "User name cannot be blank")
     String name;
-
 
     @Schema(description = "User photo")
     @Size(max = 255)

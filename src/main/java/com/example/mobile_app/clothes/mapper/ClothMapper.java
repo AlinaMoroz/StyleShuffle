@@ -11,7 +11,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public abstract class ClothMapper {
     protected UserRepository userRepository;
-    protected UserMapper userMapper;
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "user", expression = "java(userRepository.findById(dto.getUserId()).get())")
@@ -20,7 +19,6 @@ public abstract class ClothMapper {
     @Mapping(target = "lookClothes", ignore = true)
     public abstract Cloth toCloth(ClothCreateDto dto);
 
-    @Mapping(target = "userReadDto", expression = "java(userMapper.toUserReadDto(cloth.getUser()))")
     public abstract ClothReadDto toClothReadDto(Cloth cloth);
 
 

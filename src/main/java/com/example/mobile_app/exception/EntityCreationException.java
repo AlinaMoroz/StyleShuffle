@@ -1,4 +1,4 @@
-package com.example.mobile_app.exeption;
+package com.example.mobile_app.exception;
 
 public class EntityCreationException extends RuntimeException{
     public EntityCreationException(String message) {

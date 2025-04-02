@@ -1,10 +1,4 @@
-CREATE TABLE IF NOT EXISTS news_lines
-(
-    id        BIGSERIAL PRIMARY KEY,
-    post_date TIMESTAMP,
-    like_count      int,
-    dislike_count   int
-);
+
 
 CREATE TABLE IF NOT EXISTS users
 (
@@ -22,9 +16,17 @@ CREATE TABLE IF NOT EXISTS looks
 (
     id           BIGSERIAL PRIMARY KEY,
     description  VARCHAR(255),
-    news_line_id BIGINT REFERENCES news_lines (id),
     name         VARCHAR(128),
     user_id BIGINT REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS news_lines
+(
+    id        BIGSERIAL PRIMARY KEY,
+    look_id BIGINT REFERENCES looks (id),
+    post_date TIMESTAMP,
+    like_count      int,
+    dislike_count   int
 );
 
 
@@ -55,5 +57,3 @@ CREATE TABLE IF NOT EXISTS looks_clothes
     look_id   BIGINT REFERENCES looks(id),
     cloth_id BIGINT REFERENCES clothes(id)
 );
-
-

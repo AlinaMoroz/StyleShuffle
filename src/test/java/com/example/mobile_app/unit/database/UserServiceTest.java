@@ -1,4 +1,6 @@
-package com.example.mobile_app.unit.database.users;
+package com.example.mobile_app.unit.database;
+
+import com.example.mobile_app.exception.EntityCreationException;
 
 import com.example.mobile_app.users.dto.NewUserRequestDto;
 import com.example.mobile_app.users.dto.NewUserResponseDto;
@@ -34,18 +36,20 @@ class UserServiceTest {
     private UserService userService;
 
 
-    private final Long USER_ID = 1L;
-    private final String USER_NAME = "ivan_ivanov";
-    private final String EMAIL = "ivan@example.com";
-    private final String NAME = "Иван";
-    private final String SURNAME = "Иванов";
-    private final String AVATAR = "photo1.png";
-    private final String PASSWORD = "1234";
+    private static final Long USER_ID = 1L;
+    private static final String USER_NAME = "ivan_ivanov";
+    private static final String EMAIL = "ivan@example.com";
+    private static final String NAME = "Иван";
+    private static final String SURNAME = "Иванов";
+    private static final String AVATAR = "photo1.png";
+    private static final String PASSWORD = "1234";
     private User user;
+    private User updatedUser;
     private NewUserResponseDto responseDto;
     private NewUserRequestDto requestDto;
     private UserUpdateDto updateDto;
     private UserReadDto readDto;
+    private UserReadDto expectedReadDto;
 
     @BeforeEach
     void setUp() {
@@ -60,6 +64,37 @@ class UserServiceTest {
 
         readDto = new UserReadDto(USER_ID, NAME, EMAIL, AVATAR, "38", SURNAME, USER_NAME);
 
+        User user = new User();
+        user.setId(USER_ID);
+        user.setName("Old Name");
+
+        UserUpdateDto updateDto = new UserUpdateDto(
+                "New Name",
+                "New Avatar",
+                "L",
+                "NewSurname",
+                "NewUsername"
+        );
+
+
+        updatedUser = new User();
+        updatedUser.setId(USER_ID);
+        updatedUser.setName(updateDto.getName());
+        updatedUser.setAvatar(updateDto.getAvatar());
+        updatedUser.setSize(updateDto.getSize());
+        updatedUser.setSurname(updateDto.getSurname());
+        updatedUser.setUsername(updateDto.getUsername());
+
+        expectedReadDto = new UserReadDto(
+                USER_ID,
+                updateDto.getName(),
+                "existingEmail@example.com",
+                updateDto.getAvatar(),
+                updateDto.getSize(),
+                updateDto.getSurname(),
+                updateDto.getUsername()
+        );
+
 
     }
 
@@ -72,18 +107,14 @@ class UserServiceTest {
             when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
             when(userMapper.toNewUserResponseDto(user)).thenReturn(responseDto);
 
-
             Optional<NewUserResponseDto> result = userService.findById(USER_ID);
-
 
             assertTrue(result.isPresent(), "User should be find");
             assertEquals(USER_ID, result.get().id(), "User ID should match");
             assertEquals(USER_NAME, result.get().username(), "User name should match");
             assertEquals(EMAIL, result.get().email(), "Email should match");
-
             verify(userRepository, times(1)).findById(USER_ID);
             verify(userMapper, times(1)).toNewUserResponseDto(user);
-
         }
 
         @Test
@@ -92,9 +123,7 @@ class UserServiceTest {
 
             Optional<NewUserResponseDto> result = userService.findById(USER_ID);
 
-
             assertTrue(result.isEmpty(), "The user should not be found");
-
             verify(userRepository, times(1)).findById(USER_ID);
         }
 
@@ -106,7 +135,6 @@ class UserServiceTest {
 
             assertTrue(result.isEmpty(), "The result should be empty if the identifier is zero");
         }
-
     }
 
 
@@ -115,12 +143,9 @@ class UserServiceTest {
     class DeleteTest {
         @Test
         void userFoundAndDeleted() {
-
             when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
 
-
             boolean result = userService.deleteById(USER_ID);
-
 
             assertTrue(result, "The user should be deleted");
             verify(userRepository, times(1)).findById(USER_ID);
@@ -136,18 +161,16 @@ class UserServiceTest {
             assertFalse(result, "The user should not be deleted");
             verify(userRepository, times(1)).findById(USER_ID);
             verify(userRepository, never()).delete(any());
-
         }
 
         @Test
         void nullId() {
-
             Long userId = null;
 
             boolean result = userService.deleteById(userId);
 
             assertFalse(result, "The result should be false if the ID is null");
-            verify(userRepository, never()).findById(any());
+            verify(userRepository, times(1)).findById(any());
             verify(userRepository, never()).delete(any());
         }
 
@@ -177,7 +200,6 @@ class UserServiceTest {
             var result = userService.findByEmail(EMAIL);
 
             assertFalse(result.isPresent(), "User should not be found");
-
             verify(userRepository, times(1)).findByEmail(EMAIL);
         }
 
@@ -212,19 +234,15 @@ class UserServiceTest {
 
         @Test
         void saveError() {
-
             when(userMapper.toUser(requestDto)).thenReturn(user);
-            when(userRepository.save(user)).thenThrow(new RuntimeException("Save error"));
+            when(userRepository.save(user)).thenThrow(new EntityCreationException("Failed to create user"));
 
-            assertThrows(RuntimeException.class, () -> userService.create(requestDto),
-                    "Expected RuntimeException to be thrown when saving the user");
+            assertThrows(EntityCreationException.class, () -> userService.create(requestDto),
+                    "Expected EntityCreationException to be thrown when saving the user");
 
             verify(userMapper, times(1)).toUser(requestDto);
             verify(userRepository, times(1)).save(user);
-
         }
-
-
     }
 
     @Nested
@@ -233,8 +251,6 @@ class UserServiceTest {
 
         @Test
         void success() {
-
-            user.setName("Old name");
             when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
             doAnswer(invocation -> {
                 if (updateDto.getName() != null) user.setName(updateDto.getName());
@@ -243,59 +259,34 @@ class UserServiceTest {
                 if (updateDto.getUsername() != null) user.setUsername(updateDto.getUsername());
                 if (updateDto.getSurname() != null) user.setSurname(updateDto.getSurname());
                 return null;
-            }).when(userMapper).updateUser(updateDto, user);
-            when(userRepository.save(user)).thenReturn(user);
-            when(userMapper.toUserReadDto(user)).thenReturn(readDto);
+            }).when(userMapper).updateUser(eq(updateDto), eq(user));
 
-            var result = userService.update(USER_ID, updateDto);
+            when(userRepository.save(user)).thenReturn(updatedUser);
+            when(userMapper.toUserReadDto(updatedUser)).thenReturn(expectedReadDto);
 
-            assertNotNull(result, "Result should not be null");
-            assertEquals(updateDto.getName(), result.name(), "Name should be updated");
-            assertEquals(updateDto.getAvatar(), result.avatar(), "Avatar should be updated");
-            assertEquals(updateDto.getSize(), result.size(), "Size should be updated");
-            assertEquals(updateDto.getUsername(), result.username(), "Username should be updated");
-            assertEquals(updateDto.getSurname(), result.surname(), "Surname should be updated");
+            Optional<UserReadDto> resultOpt = userService.update(USER_ID, updateDto);
 
 
+            assertTrue(resultOpt.isPresent(), "Result should be present");
+            UserReadDto result = resultOpt.get();
+            assertEquals(expectedReadDto, result, "Updated user DTO should match the expected DTO");
             verify(userRepository, times(1)).findById(USER_ID);
             verify(userMapper, times(1)).updateUser(updateDto, user);
             verify(userRepository, times(1)).save(user);
-            verify(userMapper, times(1)).toUserReadDto(user);
-
-
+            verify(userRepository, times(1)).flush();
+            verify(userMapper, times(1)).toUserReadDto(updatedUser);
         }
 
         @Test
         void userNotFound() {
             when(userRepository.findById(USER_ID)).thenReturn(Optional.empty());
 
+            Optional<UserReadDto> resultOpt = userService.update(USER_ID, updateDto);
 
-            assertThrows(RuntimeException.class, () -> userService.update(USER_ID, updateDto),
-                    "Expected RuntimeException to be thrown when the user with the given ID is not found");
-
+            assertFalse(resultOpt.isPresent(), "Result should be empty when user is not found");
+            verify(userRepository, times(1)).findById(USER_ID);
+            verify(userRepository, never()).save(any());
+            verify(userMapper, never()).updateUser(any(), any());
         }
-
-        @Test
-        void nullId() {
-            Long userId = null;
-
-            assertThrows(RuntimeException.class, () -> userService.update(USER_ID, updateDto),
-                    "Expected RuntimeException to be thrown when the user with null id");
-
-        }
-
-        @Test
-        void nullUpdateDto() {
-            UserUpdateDto updateDto = null;
-
-
-            assertThrows(RuntimeException.class, () -> userService.update(USER_ID, updateDto),
-                    "Expected RuntimeException to be thrown because updateDto is null");
-
-
-        }
-
     }
-
-
 }

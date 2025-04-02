@@ -1,4 +1,4 @@
-package com.example.mobile_app.exeption;
+package com.example.mobile_app.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

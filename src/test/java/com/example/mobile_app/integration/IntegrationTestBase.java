@@ -3,6 +3,7 @@ package com.example.mobile_app.integration;
 import com.example.mobile_app.integration.annotation.IT;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.jdbc.Sql;
@@ -29,6 +30,8 @@ public abstract class IntegrationTestBase {
     static void postgresProperties(DynamicPropertyRegistry registry) {
 
         registry.add("spring.datasource.url", container::getJdbcUrl);
+        registry.add("spring.datasource.username", container::getUsername);
+        registry.add("spring.datasource.password", container::getPassword);
 
 
     }

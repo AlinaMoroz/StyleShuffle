@@ -1,4 +1,4 @@
-package com.example.mobile_app.exeption;
+package com.example.mobile_app.exception;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;

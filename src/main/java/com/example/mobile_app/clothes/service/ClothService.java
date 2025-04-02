@@ -5,6 +5,7 @@ import com.example.mobile_app.clothes.dto.ClothCreateDto;
 import com.example.mobile_app.clothes.dto.ClothReadDto;
 import com.example.mobile_app.clothes.mapper.ClothMapper;
 import com.example.mobile_app.clothes.repository.ClothRepository;
+import com.example.mobile_app.exception.EntityCreationException;
 import com.example.mobile_app.looks_clothes.LookClothRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +32,10 @@ public class ClothService {
      * @return An Optional with the ClothReadDto if the Cloth present; otherwise, empty
      */
     public Optional<ClothReadDto> findById(Long id) {
+        log.info("Finding cloth with id {}", id);
         var maybeClothReadDTO = clothRepository.findById(id)
                 .map(clothMapper::toClothReadDto);
+        log.info("Cloth found: {}", maybeClothReadDTO);
 
         maybeClothReadDTO.ifPresentOrElse(
                 user -> log.info("User found: {}",user),
@@ -46,20 +49,20 @@ public class ClothService {
     /**
      * Finds all clothes associated with a specific set by its ID.
      *
-     * @param setId The ID of the set for which clothes are to be retrieved.
+     * @param lookId The ID of the set for which clothes are to be retrieved.
      * @return List of ClothReadDto representing all clothes in the set.
      */
-    public List<ClothReadDto> findAllClothBySetId(Long setId) {
+    public List<ClothReadDto> findAllClothByLookId(Long lookId) {
 
-        var clothReadDtos = lookClothRepository.findAllClothByLookId(setId)
+        var clothReadDtos = lookClothRepository.findAllClothByLookId(lookId)
                 .stream()
                 .map(clothMapper::toClothReadDto)
                 .toList();
 
         if(clothReadDtos.size() == 0){
-            log.info("Set with id {} does have any clothes");
+            log.info("Set with id {} does have any clothes",lookId);
         }else {
-            log.info("Set with id {} contains {} clothes.", setId, clothReadDtos.size());
+            log.info("Set with id {} contains {} clothes.", lookId, clothReadDtos.size());
         }
         return clothReadDtos;
     }
@@ -86,7 +89,7 @@ public class ClothService {
                 })
                 .orElseThrow(() -> {
                     log.error("Cloth creation failed for DTO: {}", createDto);
-                    return new RuntimeException("Failed to create Cloth");
+                    return new EntityCreationException("Failed to create Cloth");
                 });
 
     }
@@ -127,7 +130,7 @@ public class ClothService {
                     return true;
                 })
                 .orElseGet(() ->{
-                    log.warn("Cloth with id {} not found and cannot be deleted");
+                    log.warn("Cloth with id {} not found and cannot be deleted", id);
                     return false;
                 });
 

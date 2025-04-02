@@ -10,8 +10,6 @@ import lombok.Value;
 @Schema(description = "Registration new user")
 public class NewUserRequestDto {
 
-
-
     @Schema(description = "Email user")
     @Email(message = "Provide a valid email address")
     @NotBlank(message = "Email cannot be blank")

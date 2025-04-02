@@ -18,7 +18,6 @@ public class UserServiceIT extends IntegrationTestBase {
 
     private final UserService userService;
 
-
     private static final Long USER_ID = 1L;
     private static final String EMAIL = "ivan@example.com";
 
@@ -79,9 +78,8 @@ public class UserServiceIT extends IntegrationTestBase {
 
         var actualResult = userService.update(USER_ID, userUpdateDto);
 
-        assertTrue(Optional.of(actualResult).isPresent());
 
-        Optional.of(actualResult).ifPresent(user -> {
+        actualResult.ifPresent(user -> {
             assertEquals(USER_ID, user.id());
             assertEquals(NAME, user.name());
             assertEquals(EMAIL, user.email());
@@ -89,7 +87,6 @@ public class UserServiceIT extends IntegrationTestBase {
             assertEquals(SIZE, user.size());
             assertEquals(SURNAME, user.surname());
             assertEquals(USERNAME, user.username());
-
         });
 
     }
@@ -105,10 +102,7 @@ public class UserServiceIT extends IntegrationTestBase {
         Pageable pageable = PageRequest.of(0, 3);
         var actualResult = userService.findAll(pageable);
 
-
         assertTrue(actualResult.hasContent());
         assertEquals(3, actualResult.getContent().size(), "The list should have size 3");
-
-
     }
 }

@@ -23,6 +23,11 @@ public class NewsLine implements BaseEntity<Long> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @JoinColumn(name = "look_id")
+    private Look look;
+
     @Column(name = "post_date")
     private LocalDateTime postDate;
 
@@ -39,20 +44,11 @@ public class NewsLine implements BaseEntity<Long> {
     @OneToMany(mappedBy = "newsLine")
     List<Comment> comments = new ArrayList<>();
 
-    @Builder.Default
-    @ToString.Exclude
-    @OneToMany(mappedBy = "newsLine")
-    List<Look> looks = new ArrayList<>();
-
     public void addComment(Comment comment){
         comments.add(comment);
         comment.setNewsLine(this);
     }
 
-    public void addSet(Look look){
-        looks.add(look);
-        look.setNewsLine(this);
-    }
 
 
 }

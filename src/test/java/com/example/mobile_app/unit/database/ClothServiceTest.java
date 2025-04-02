@@ -39,10 +39,10 @@ public class ClothServiceTest {
     @InjectMocks
     private ClothService clothService;
 
-    private final Long ClothId = 1L;
-    private final Long lookId = 1L;
-    private final Long UserId = 1L;
-    private final String LinkPhoto = "https://www.example.com/photo.jpg";
+    private static final Long CLOTH_ID = 1L;
+    private static final Long LOOK_ID = 1L;
+    private static final Long USER_ID = 1L;
+    private static final String LINK_PHOTO = "https://www.example.com/photo.jpg";
     Cloth cloth;
     User user;
     UserReadDto userReadDto;
@@ -54,26 +54,25 @@ public class ClothServiceTest {
     @BeforeEach
     void setUp() {
         cloth = new Cloth();
-        cloth.setId(ClothId);
+        cloth.setId(CLOTH_ID);
         cloth.setUser(user);
-        cloth.setLinkPhoto(LinkPhoto);
+        cloth.setLinkPhoto(LINK_PHOTO);
         cloth.setSeason(Season.WINTER);
         cloth.setType(Type.DRESS);
 
-        clothReadDto = new ClothReadDto(ClothId, userReadDto, LinkPhoto, Season.WINTER, Type.DRESS);
-
+        clothReadDto = new ClothReadDto(CLOTH_ID, LINK_PHOTO, Season.WINTER, Type.DRESS);
 
         user = new User();
-        user.setId(UserId);
+        user.setId(USER_ID);
         user.setName("John");
         user.setEmail("john@example.com");
         user.setPassword("password");
         user.setAvatar("https://www.example.com/avatar.jpg");
         user.setSize("M");
 
-        userReadDto = new UserReadDto(UserId, "John", "john@example.com", "https://www.example.com/avatar.jpg", "M", "Doe", "johndoe");
+        userReadDto = new UserReadDto(USER_ID, "John", "john@example.com", "https://www.example.com/avatar.jpg", "M", "Doe", "johndoe");
 
-        clothCreateDto = new ClothCreateDto(UserId, LinkPhoto, Season.WINTER, Type.DRESS);
+        clothCreateDto = new ClothCreateDto(USER_ID, LINK_PHOTO, Season.WINTER, Type.DRESS);
     }
 
     @Nested
@@ -81,25 +80,25 @@ public class ClothServiceTest {
     class FindByIdTest {
         @Test
         void clothFound() {
-            when(clothRepository.findById(ClothId)).thenReturn(Optional.of(cloth));
+            when(clothRepository.findById(CLOTH_ID)).thenReturn(Optional.of(cloth));
             when(clothMapper.toClothReadDto(cloth)).thenReturn(clothReadDto);
 
-            var result = clothService.findById(ClothId);
+            var result = clothService.findById(CLOTH_ID);
 
             assertTrue(result.isPresent());
             assertEquals(clothReadDto, result.get());
-            verify(clothRepository, times(1)).findById(ClothId);
+            verify(clothRepository, times(1)).findById(CLOTH_ID);
             verify(clothMapper, times(1)).toClothReadDto(cloth);
         }
 
         @Test
         void clothNotFound() {
-            when(clothRepository.findById(ClothId)).thenReturn(Optional.empty());
+            when(clothRepository.findById(CLOTH_ID)).thenReturn(Optional.empty());
 
-            var result = clothService.findById(ClothId);
+            var result = clothService.findById(CLOTH_ID);
 
             assertTrue(result.isEmpty());
-            verify(clothRepository, times(1)).findById(ClothId);
+            verify(clothRepository, times(1)).findById(CLOTH_ID);
             verify(clothMapper, times(0)).toClothReadDto(cloth);
         }
 
@@ -120,23 +119,23 @@ public class ClothServiceTest {
     class FindAllClothByLookIdTest {
         @Test
         void clothesFound() {
-            when(lookClothRepository.findAllClothByLookId(lookId)).thenReturn(Set.of(cloth));
+            when(lookClothRepository.findAllClothByLookId(LOOK_ID)).thenReturn(Set.of(cloth));
             when(clothMapper.toClothReadDto(cloth)).thenReturn(clothReadDto);
-            var result = clothService.findAllClothByLookId(lookId);
+            var result = clothService.findAllClothByLookId(LOOK_ID);
 
             assertEquals(1, result.size());
             assertEquals(clothReadDto, result.get(0));
-            verify(lookClothRepository, times(1)).findAllClothByLookId(lookId);
+            verify(lookClothRepository, times(1)).findAllClothByLookId(LOOK_ID);
             verify(clothMapper, times(1)).toClothReadDto(cloth);
         }
 
         @Test
         void clothesNotFound() {
-            when(lookClothRepository.findAllClothByLookId(lookId)).thenReturn(Set.of());
-            var result = clothService.findAllClothByLookId(lookId);
+            when(lookClothRepository.findAllClothByLookId(LOOK_ID)).thenReturn(Set.of());
+            var result = clothService.findAllClothByLookId(LOOK_ID);
 
             assertEquals(0, result.size());
-            verify(lookClothRepository, times(1)).findAllClothByLookId(lookId);
+            verify(lookClothRepository, times(1)).findAllClothByLookId(LOOK_ID);
             verify(clothMapper, times(0)).toClothReadDto(cloth);
         }
 
@@ -147,80 +146,9 @@ public class ClothServiceTest {
             var result = clothService.findAllClothByLookId(null);
 
             assertTrue(result.isEmpty());
-            assertEquals(0, result.size());
             verify(lookClothRepository, times(1)).findAllClothByLookId(null);
             verify(clothMapper, times(0)).toClothReadDto(cloth);
         }
     }
-
-//    @Nested
-//    @Tag("create")
-//    class CreateTest {
-//        @Test
-//        void clothCreated() {
-//            when(clothMapper.toCloth(clothCreateDto)).thenReturn(cloth);
-//            when(clothRepository.save(cloth)).thenReturn(cloth);
-//            when(clothMapper.toClothReadDto(cloth)).thenReturn(clothReadDto);
-//
-//            var result = clothService.create(clothCreateDto);
-//
-//            assertEquals(clothReadDto, result);
-//            verify(clothMapper, times(1)).toCloth(clothCreateDto);
-//            verify(clothRepository, times(1)).save(cloth);
-//            verify(clothMapper, times(1)).toClothReadDto(cloth);
-//        }
-
-//        @Test
-//        void nullClothCreateDto() {
-//
-//            when(clothMapper.toCloth(null)).thenReturn(null);
-//            when(clothRepository.save(any())).thenThrow(IllegalArgumentException.class);
-//
-//            assertThrows(IllegalArgumentException.class,
-//                    () -> clothService.create(any()),
-//                    "ClothCreateDto cannot be null");
-//
-//            verify(clothMapper, times(1)).toCloth(null);
-//            verify(clothRepository, never()).save(any());
-//            verify(clothMapper, never()).toClothReadDto(any());
-//        }
-
-
-//
-//    }
-
-
-    @Nested
-    @Tag("findAllByUserIdAndType")
-    class FindAllByUserIdAndTypeTest {
-        @Test
-        void clothesFound() {
-        }
-        @Test
-        void clothesNotFound() {
-        }
-        @Test
-        void nullUserId() {
-        }
-        @Test
-        void nullType() {
-
-        }
-    }
-
-    @Nested
-    @Tag("deleteById")
-    class DeleteByIdTest {
-        @Test
-        void clothDeleted() {
-        }
-        @Test
-        void clothNotFound() {
-        }
-        @Test
-        void nullId() {
-        }
-    }
-
 
 }

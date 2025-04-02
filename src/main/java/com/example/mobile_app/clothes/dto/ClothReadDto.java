@@ -11,8 +11,6 @@ import lombok.Builder;
 public record ClothReadDto(
         @Schema(description = "Id of the cloth")
         Long id,
-        @Schema(description = "Details about the user associated with this cloth")
-        UserReadDto userReadDto,
         @Schema(description = "URL to the photo of the cloth")
         String linkPhoto,
         @Schema(description = "Season of the cloth")

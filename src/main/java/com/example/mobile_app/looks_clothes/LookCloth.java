@@ -1,7 +1,6 @@
 package com.example.mobile_app.looks_clothes;
 
 import com.example.mobile_app.clothes.model.Cloth;
-
 import com.example.mobile_app.general.BaseEntity;
 import com.example.mobile_app.looks.model.Look;
 
@@ -31,17 +30,11 @@ public class LookCloth implements BaseEntity<Long> {
     @ToString.Exclude
     private Cloth cloth;
 
-    public void setLook(Look look){
-        this.look = look;
-        this.look.getLookClothes().add(this);
+    public static LookCloth create(Look look, Cloth cloth) {
+        LookCloth lookCloth = new LookCloth();
+        lookCloth.look = look;
+        lookCloth.cloth = cloth;
+        return lookCloth;
     }
-
-    public void setCloth(Cloth cloth){
-        this.cloth = cloth;
-        this.cloth.getLookClothes().add(this);
-
-    }
-
-
 
 }

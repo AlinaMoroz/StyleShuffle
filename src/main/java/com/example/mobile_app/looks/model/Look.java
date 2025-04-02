@@ -1,13 +1,15 @@
 package com.example.mobile_app.looks.model;
 
+import com.example.mobile_app.clothes.model.Cloth;
 import com.example.mobile_app.general.BaseEntity;
-import com.example.mobile_app.newslines.model.NewsLine;
 import com.example.mobile_app.looks_clothes.LookCloth;
 import com.example.mobile_app.users.modal.User;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 
 @Entity
@@ -24,10 +26,6 @@ public class Look implements BaseEntity<Long> {
 
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private NewsLine newsLine;
-
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -35,19 +33,22 @@ public class Look implements BaseEntity<Long> {
     private User user;
 
     @Builder.Default
-    @OneToMany(mappedBy = "look")
+    @OneToMany(mappedBy = "look", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    private java.util.Set<LookCloth> lookClothes = new HashSet<>();
+    @EqualsAndHashCode.Exclude
+    private Set<LookCloth> lookClothes = new HashSet<>();
 
-    public void addSetCloth(LookCloth lookCloth) {
+    public void addCloth(Cloth cloth) {
+        LookCloth lookCloth = LookCloth.create(this, cloth);
         lookClothes.add(lookCloth);
-        lookCloth.setLook(this);
     }
 
-    public void removeSetCloth(LookCloth lookCloth) {
-        lookClothes.remove(lookCloth);
-        lookCloth.setLook(null);
+    public void removeCloth(Cloth cloth) {
+        Optional<LookCloth> relation = lookClothes.stream()
+                .filter(lc -> lc.getCloth().equals(cloth))
+                .findFirst();
+        relation.ifPresent(lc -> {
+            lookClothes.remove(lc);
+        });
     }
-
-
 }

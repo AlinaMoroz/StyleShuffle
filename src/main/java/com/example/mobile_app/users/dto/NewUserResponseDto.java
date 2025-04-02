@@ -6,9 +6,9 @@ import lombok.Builder;
 @Builder
 @Schema(description = "Response on registration user ")
 public record NewUserResponseDto(@Schema(description = "Id user")
-                              Long id,
+                                 Long id,
                                  @Schema(description = "Nickname user")
-                              String username,
+                                 String username,
                                  @Schema(description = "Email user")
-                              String email) {
+                                 String email) {
 }

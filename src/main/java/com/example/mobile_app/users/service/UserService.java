@@ -1,11 +1,11 @@
 package com.example.mobile_app.users.service;
 
 
+import com.example.mobile_app.exception.EntityCreationException;
 import com.example.mobile_app.users.dto.NewUserRequestDto;
 import com.example.mobile_app.users.dto.NewUserResponseDto;
 import com.example.mobile_app.users.dto.UserReadDto;
 import com.example.mobile_app.users.dto.UserUpdateDto;
-
 import com.example.mobile_app.users.mapper.UserMapper;
 import com.example.mobile_app.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,9 +40,7 @@ public class UserService {
                 user -> log.info("User found: {}", user),
                 () -> log.warn("User with id {} not found", id)
         );
-
         return newUserResponseDto;
-
     }
 
     /**
@@ -53,11 +51,6 @@ public class UserService {
      */
     @Transactional
     public boolean deleteById(Long id) {
-        if (id == null) {
-            log.warn("Attempted to delete user, but ID is null.");
-            return false;
-        }
-
         return userRepository.findById(id)
                 .map(entity -> {
                     userRepository.delete(entity);
@@ -74,17 +67,16 @@ public class UserService {
      *
      * @param email The email address of the user to find.
      * @return Optional of UserReadDto
-    */
+     */
 
     public Optional<UserReadDto> findByEmail(String email) {
-        log.info("Try to find user with email {}",email);
-        var user = userRepository.findByEmail(email);
 
+        var user = userRepository.findByEmail(email);
         var userReadDto = user.map(userMapper::toUserReadDto);
 
-        if(user.isPresent()){
+        if (user.isPresent()) {
             log.info("User with email {} found and mapped to UserReadDto.", email);
-        }else {
+        } else {
             log.warn("No user found with email: {}", email);
         }
         return userReadDto;
@@ -97,16 +89,14 @@ public class UserService {
      *
      * @param userDto userDto The DTO containing the user's registration details
      * @return NewUserResponseDto if user is saved correctly.
-     * @throws RuntimeException if an unexpected error occurs during the mapping or saving process.
+     * @throws EntityCreationException if an unexpected error occurs during the mapping or saving process.
      */
     @Transactional
     public NewUserResponseDto create(NewUserRequestDto userDto) {
-        log.info("Attempting to create a new user : {}", userDto);
-
         return Optional.of(userDto)
                 .map(userMapper::toUser)
                 .map(user -> {
-                    log.info("Mapping NewUserRe@questDto to User entity: {}", user);
+                    log.info("Mapping NewUserRequestDto to User entity: {}", user);
                     return userRepository.save(user);
                 })
                 .map(savedUser -> {
@@ -115,31 +105,28 @@ public class UserService {
                 })
                 .orElseThrow(() -> {
                     log.error("Unexpected error during user creation for");
-                    return new RuntimeException("Failed to create user");
+                    return new EntityCreationException("Failed to create user");
                 });
     }
 
 
     /**
      * Updates an existing user by their ID using the provided UserUpdateDto.
-     *
+     * <p>
      * This method finds the user by ID, updates the user's fields with the values
      * from the UserUpdateDto, saves the updated entity to the database, and then
      * returns the updated user's data as a UserReadDto.
      *
-     * @param id The ID of the user to update.
+     * @param id        The ID of the user to update.
      * @param updateDto The DTO containing the updated user details
-     * @return A UserReadDto containing the updated user information.
-     * @throws RuntimeException if no user with the specified ID is found
+     * @return Optional of UserReadDto containing the updated user information.
      */
     @Transactional
-    public UserReadDto update(Long id, UserUpdateDto updateDto) {
-        log.info("Attempting to update user with ID: {}", id);
+    public Optional<UserReadDto> update(Long id, UserUpdateDto updateDto) {
         return userRepository.findById(id).map(
                 entity -> {
                     log.info("User with ID {} found. Updating user with data: {}", id, updateDto);
-
-                    userMapper.updateUser(updateDto,entity);
+                    userMapper.updateUser(updateDto, entity);
                     log.info("Mapped UserUpdateDto to User entity: {}", entity);
 
                     var entity1 = userRepository.save(entity);
@@ -148,11 +135,7 @@ public class UserService {
 
                     return userMapper.toUserReadDto(entity1);
                 }
-
-        ).orElseThrow(() -> {
-            log.warn("User with ID {} not found. Update operation failed.", id);
-            return new RuntimeException("User not found with ID: " + id);
-        });
+        );
     }
 
     /**
@@ -170,9 +153,4 @@ public class UserService {
 
         return readDtos;
     }
-
-
-
-
-
 }

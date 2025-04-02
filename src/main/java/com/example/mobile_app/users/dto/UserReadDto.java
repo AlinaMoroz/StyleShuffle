@@ -7,17 +7,17 @@ import lombok.Builder;
 
 @Schema(description = "Entity user")
 public record UserReadDto(@Schema(description = "id user")
-                      Long id,
+                          Long id,
                           @Schema(description = "User name")
-                      String name,
+                          String name,
                           @Schema(description = "User email")
-                      String email,
+                          String email,
                           @Schema(description = "User avatar")
-                      String avatar,
+                          String avatar,
                           @Schema(description = "User size cloth")
-                      String size,
+                          String size,
                           @Schema(description = "User surname")
-                      String surname,
+                          String surname,
                           @Schema(description = "User nickname")
-                      String username) {
+                          String username) {
 }

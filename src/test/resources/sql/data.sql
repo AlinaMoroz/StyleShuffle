@@ -5,19 +5,21 @@ VALUES (1, 'Иван Иванов', 'ivan@example.com', 'password123', 'avatar1.
 SELECT SETVAL('users_id_seq', (SELECT MAX(id) FROM users));
 
 
-INSERT INTO news_lines (id, post_date, like_count, dislike_count)
-VALUES (1, '2023-10-01 12:00:00', 10, 2),
-       (2, '2023-10-02 14:30:00', 5, 1),
-       (3, '2023-10-03 09:15:00', 20, 3);
+
+
+
+
+INSERT INTO looks (id, description,  name, user_id)
+VALUES (1, 'Повседневный стиль', 'Набор 1', 1),
+       (2, 'Спортивный стиль', 'Набор 2', 2),
+       (3, 'Офисный стиль', 'Набор 3', 3);
+SELECT SETVAL('looks_id_seq', (SELECT MAX(id) FROM looks));
+
+INSERT INTO news_lines (id, look_id, post_date, like_count, dislike_count)
+VALUES (1, 1 ,'2023-10-01 12:00:00', 10, 2),
+       (2, 2, '2023-10-02 14:30:00', 5, 1),
+       (3, 3, '2023-10-03 09:15:00', 20, 3);
 SELECT SETVAL('news_lines_id_seq', (SELECT MAX(id) FROM news_lines));
-
-
-
-INSERT INTO looks (id, description, news_line_id, name, user_id)
-VALUES (1, 'Повседневный стиль', 1, 'Набор 1', 1),
-       (2, 'Спортивный стиль', 2, 'Набор 2', 2),
-       (3, 'Офисный стиль', 3, 'Набор 3', 3);
-SELECT SETVAL('sets_id_seq', (SELECT MAX(id) FROM sets));
 
 
 
@@ -39,7 +41,7 @@ VALUES (1, 1, 1), -- Набор 1: Футболка
        (4, 2, 4), -- Набор 2: Шапка
        (5, 3, 5), -- Набор 3: Пальто
        (6, 3, 6); -- Набор 3: Брюки
-SELECT SETVAL('sets_clothes_id_seq', (SELECT MAX(id) FROM sets_clothes));
+SELECT SETVAL('looks_clothes_id_seq', (SELECT MAX(id) FROM looks_clothes));
 
 
 
